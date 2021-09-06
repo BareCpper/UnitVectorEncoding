@@ -9,12 +9,13 @@
 #include <gtest/gtest.h>
 #endif
 
+#include <cstddef> //< std::size
 #include <cmath>
 #include <random>
 
 //PAPER http://jcgt.org/published/0003/02/01/paper.pdf
 
-#if __has_attribute(ext_vector_type)
+#if __has_attribute(vector_size)
 //https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
 using v2sf = float __attribute__ ((vector_size (8)));
 using v4sf = float __attribute__ ((vector_size (16)));
@@ -279,15 +280,15 @@ INSTANTIATE_TEST_SUITE_P(Decodes, DecodeVec, testing::Range(size_t(0), std::size
 #endif //TEST_ENABLED
 
 int main(int argc, char **argv) {
+
+    int retval = -1;
   #if TEST_ENABLED
     ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    retval = RUN_ALL_TESTS();
   #elif BENCHMARK_ENABLED
-    ::benchmark::RunSpecifiedBenchmarks();
-    return 0;
-  #else
-    return -1;
+    retval = ::benchmark::RunSpecifiedBenchmarks();
   #endif
+    return retval;
 }
 //int main(int,char**);
 //BENCHMARK_MAIN();

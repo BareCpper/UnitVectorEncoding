@@ -12,16 +12,31 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(cmakefetchcontent_googletest)
 
 FetchContent_Declare(
-  fetchcontent_googlebenchmark
+  googlebenchmark
   GIT_REPOSITORY https://github.com/google/benchmark.git
+  CMAKE_ARGS
+      -DCMAKE_BUILD_TYPE:STRING=Release
+      -DBENCHMARK_ENABLE_TESTING=OFF
+      -DBENCHMARK_ENABLE_GTEST_TESTS=OFF
+#  BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
   # TODO Living at trunk!
 )
-FetchContent_MakeAvailable(fetchcontent_googlebenchmark)
+set(BENCHMARK_ENABLE_TESTING OFF CACHE INTERNAL "") 
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE INTERNAL "") 
+#set(CMAKE_BUILD_TYPE Release CACHE INTERNAL "<some description>")
+FetchContent_MakeAvailable(googlebenchmark)
 
 # Add source to this project'sexecutable.
 add_executable (UnitVectorEncoding 
     "test.cpp" )
-
+target_compile_options(UnitVectorEncoding
+    PUBLIC 
+        -ffast-math -mfma
+)
+target_compile_features( UnitVectorEncoding 
+    PUBLIC
+        cxx_std_17 
+)
 target_link_libraries(UnitVectorEncoding
     PUBLIC
         GTest::Main
