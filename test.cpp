@@ -63,10 +63,10 @@ union float4
 };
 
 // -O3 -ffast-math -mfma4
-inline float4 normalize(float4 n)
+inline float4 normalize(float3 n)
 {
-    const float4 sqr = {n.v * n.v};
-    const float sum = sqr.x + sqr.y + sqr.z;// + sqr.w;
+    const float4 sqr = {n.x * n.x, n.y * n.y , n.z * n.z, 0 };
+    const float sum = sqr.x + sqr.y + sqr.z + sqr.w;
     const float invMag = 1.0F / std::sqrt(sum);  
     return float4{ n.x * invMag, n.y * invMag, n.z * invMag, n.w * invMag } ;
 }
@@ -96,15 +96,15 @@ float3 octDecodeFloat2( float2 f )
     xy.y += ((xy.y < 0.0F) ? t : -t);
 #endif
    // xy += signNotZero(xy) * -t;   
-    return normalize( float4{ xy.x, xy.y, z, 0} ).xyz;
+    return normalize(float3{ xy.x, xy.y, z }).xyz;
 }
 
 float3 octDecodeVec( float2 f )
 {
-    float z = 1.0F - std::abs(f.x) - std::abs(f.y);
+    float z = 1.0F - std::abs(f.v[0]) - std::abs(f.v[1]);
     const float t = std::max(-z, 0.0F);
-    v2sf quad = (f.v < 0.0F) ? t : -t;
-    v4sf norm = normalize( v4sf{ f.v[0] + quad[0], f.v[1] + quad[1], z, 0} );
+    f.v += ((f.v < 0.0F) ? t : -t);
+    v4sf norm = normalize(v4sf{ f.v[0], f.v[1], z, 0 });
     return float3{ norm[0], norm[1], norm[2] };
 }
 
@@ -194,9 +194,9 @@ static void BenchOctDecodeJCGT(benchmark::State& state) {
   }
 }
 // Register the function as a benchmark
+BENCHMARK(BenchOctDecodeVec)->MinTime(3);
 BENCHMARK(BenchOctDecodeJCGT)->MinTime(3);
 BENCHMARK(BenchOctDecodeFloat2)->MinTime(3);
-BENCHMARK(BenchOctDecodeVec)->MinTime(3);
 
 TEST(MyTest, Benchmarks)
 {
@@ -273,9 +273,9 @@ TEST_P(DecodeVec, Correct)
     EXPECT_NEAR( res.z, encDec.dec.z, 0.001);
 }
 
+INSTANTIATE_TEST_SUITE_P(Decodes, DecodeVec, testing::Range(size_t(0), std::size(encDecTests) ) );
 INSTANTIATE_TEST_SUITE_P(Decodes, DecodeJCGT, testing::Range(size_t(0), std::size(encDecTests) ) );
 INSTANTIATE_TEST_SUITE_P(Decodes, DecodeFloat2, testing::Range(size_t(0), std::size(encDecTests) ) );
-INSTANTIATE_TEST_SUITE_P(Decodes, DecodeVec, testing::Range(size_t(0), std::size(encDecTests) ) );
 
 #endif //TEST_ENABLED
 
