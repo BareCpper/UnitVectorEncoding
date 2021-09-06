@@ -68,7 +68,7 @@ inline float4 normalize(float3 n)
     const float4 sqr = {n.x * n.x, n.y * n.y , n.z * n.z, 0 };
     const float sum = sqr.x + sqr.y + sqr.z + sqr.w;
     const float invMag = 1.0F / std::sqrt(sum);  
-    return float4{ n.x * invMag, n.y * invMag, n.z * invMag, n.w * invMag } ;
+    return float4{ n.x * invMag, n.y * invMag, n.z * invMag, 0 } ;
 }
 inline v4sf normalize(v4sf n)
 {
