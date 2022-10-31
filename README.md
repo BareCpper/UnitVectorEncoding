@@ -5,3 +5,6 @@ Work-In-Progress compact Unit-Vector encoding from float3 to Octahedron (octant)
     - Trade-off precision for size and/or speed
 - Fast
     - TODO: Benchmarking
+
+# Potential uses
+- SDF (Signed Distance Field) geometry rendering and storage
