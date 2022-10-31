@@ -148,7 +148,7 @@ float3 octDecodeJCGT( float2 e )
              , (1.0F - abs(v.x)) * ((v.y >= 0.0F) ? +1.0F : -1.0F) };
     }
 #endif
-    return normalize( float4{ v.x, v.y, v.z, 0} ).xyz;
+    return normalize( float3{ v.x, v.y, v.z } ).xyz;
 }
 
 #if BENCHMARK_ENABLED
@@ -198,10 +198,13 @@ BENCHMARK(BenchOctDecodeVec)->MinTime(3);
 BENCHMARK(BenchOctDecodeJCGT)->MinTime(3);
 BENCHMARK(BenchOctDecodeFloat2)->MinTime(3);
 
-TEST(MyTest, Benchmarks)
-{
-    ::benchmark::RunSpecifiedBenchmarks();
-}
+
+#if TEST_ENABLED
+    TEST(MyTest, Benchmarks)
+    {
+        ::benchmark::RunSpecifiedBenchmarks();
+    }
+#endif
 #endif //< BENCHMARK_ENABLED
 
 struct { float2 enc; float3 dec; } encDecTests[] =
